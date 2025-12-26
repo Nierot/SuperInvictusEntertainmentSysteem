@@ -1,16 +1,33 @@
-import { useEffect, useState } from 'react'
+import '@/style/components/sies.sass'
+import { useState, useEffect, useRef } from 'react'
 import { type State } from './types'
-import { Logo } from './Logo'
+import { Timer } from './timer'
 
-export function SuperInvictusEntertainmentSysteem({ state: State }) {
-  const [state, _setState] = useContext(state)
+type SIESProps = {
+  initialState: State
+}
 
-  // useEffect(() => {
-  // _setState({
-  // })
-  // }, [])
+export function SuperInvictusEntertainmentSysteem({ initialState }: SIESProps) {
+  const [state, setState] = useState<State>(initialState)
+  const [tick, setTick] = useState<number>()
+  const [timeReadable, setTimeReadable] = useState<string>('')
+  const timer = useRef<Timer>(new Timer())
 
-  return <div>
-    <Logo />
+  useEffect(() => {
+    timer.current.onTick((tick: number, thr: string) => {
+      setTick(tick)
+      setTimeReadable(thr)
+    })
+
+    timer.current.start()
+  }, [timer])
+
+  useEffect(() => {
+
+  }, [tick])
+
+
+  return <div className="SIES">
+    <p>{timeReadable}</p>
   </div>
 }

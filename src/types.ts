@@ -1,6 +1,9 @@
-type GameID = `sies-${string}`;
-type PlayerID = `Speler ${number}`;
-type AmountOfPlayers = 1 | 2 | 4 | 8;
+export type GameID = number
+export type PlayerID = number
+export type AmountOfPlayers = 0 | 1 | 2 | 4 | 8
+
+export const RESERVED_GAME_IDS = [-1]
+export const GAME_ID_GAME_STARTED = -1
 
 export type State = {
   currentGame: GameID
@@ -12,13 +15,13 @@ export type State = {
   history: GameEvent[]
 }
 
-type Player = {
+export type Player = {
   pid: PlayerID
   name: string
   score: number
 }
 
-type Game = {
+export type Game = {
   gid: GameID
   weight: number
   roundTime: number

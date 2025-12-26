@@ -1,23 +1,28 @@
 import '@/style/components/setup.sass'
 import { useState, useCallback, useRef } from 'react'
+import { initState } from './game'
+import type { State } from './types'
 
 type SetupProps = {
   navigate: (to: string) => void
+  setGameState: (state: State) => void
 }
 
-export function Setup({ navigate }: SetupProps) {
+type Dialog = {
+  text: string
+  action: string
+  button: () => void
+}
+
+export function Setup({ navigate, setGameState }: SetupProps) {
   const [players, setPlayers] = useState<Array<string>>([])
 
   const confirmDialog = useRef<HTMLDialogElement>(null)
-  const [dialogText, setDialogText] = useState<string>('')
-  const [dialogAction, setDialogAction] = useState<string>('')
-  const [dialogActionButton, setDialogActionButton] = useState<() => void>()
+  const [dialog, setDialog] = useState<Dialog>({ text: '', action: '', button: () => null })
 
   const openDialog = (text: string, action: string, button: () => void) => {
-    setDialogText(text)
-    setDialogAction(action)
-    setDialogActionButton(button)
-    confirmDialog.current?.show()
+    setDialog({ text, action, button })
+    confirmDialog.current!.show()
   }
 
   const closeDialog = () => {
@@ -34,6 +39,10 @@ export function Setup({ navigate }: SetupProps) {
         closeDialog
       )
     }
+
+    // TODO: init gamestate
+    const state = initState(players)
+    setGameState(state)
 
     navigate('game')
   }
@@ -55,10 +64,10 @@ export function Setup({ navigate }: SetupProps) {
 
   return <div>
     <div className="SetupScreen">
-      <dialog ref={confirmDialog} onClick={closeDialog} open={false}>
+      <dialog ref={confirmDialog} onClick={closeDialog}>
         <h5>Weet je het zeker?</h5>
-        <p>{dialogText}</p>
-        <button onClick={dialogActionButton}>{dialogAction}</button>
+        <p>{dialog.text}</p>
+        <button onClick={dialog.button}>{dialog.action}</button>
       </dialog>
       <h2>Spel instellingen</h2>
       <div className='Players'>
