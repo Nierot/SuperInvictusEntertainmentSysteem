@@ -1,0 +1,31 @@
+.SetupScreen
+  height: 100vh
+  width: 100vw
+  background: #551B8A
+  background: linear-gradient(180deg,rgba(85, 27, 138, 1) 0%, rgba(106, 90, 125, 1) 20%, rgba(106, 90, 125, 1) 80%, rgba(85, 27, 138, 1) 100%)
+
+  display: flex
+  flex-direction: column
+  gap: 1rem
+  // padding-bottom: 10vh
+  align-items: center
+
+  color: white
+
+  .Players
+    display: grid
+    grid-template-rows: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr);
+    
+    padding-top: 1rem
+    gap: 1rem
+
+    p
+      max-width: 20rem
+
+dialog
+  top: 10%
+  position: fixed
+
+  background: none !important
+  background-color: red !important
