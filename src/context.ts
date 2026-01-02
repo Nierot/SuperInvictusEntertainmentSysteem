@@ -1,3 +1,4 @@
 import { createContext } from 'react'
+import { State } from './game'
 
-export const NavigationContext = createContext('splash')
+export const GameContext = createContext<State>(new State())

@@ -1,13 +1,13 @@
 import { useEffect, useState, type ReactNode } from 'react'
-import './style/style.sass'
+import '@/style/style.sass'
 import { SuperInvictusEntertainmentSysteem } from './SuperInvictusEntertainmentSysteem.tsx'
 import { Setup } from './Setup'
 import { Splash } from './Splash'
-import type { State } from './types.ts'
+import { GameContext } from './context'
+import { createEmptyState } from './game.ts'
 
 export function App() {
   const [screen, setScreen] = useState<ReactNode>()
-  const [gameState, setGameState] = useState<State>()
 
   function navigate(to: string) {
     localStorage.setItem('sies-page', to)
@@ -15,9 +15,9 @@ export function App() {
 
     switch (to) {
       case 'game':
-        return setScreen(<SuperInvictusEntertainmentSysteem initialState={gameState!} />)
+        return setScreen(<SuperInvictusEntertainmentSysteem />)
       case 'setup':
-        return setScreen(<Setup navigate={navigate} setGameState={setGameState} />)
+        return setScreen(<Setup navigate={navigate} />)
       default:
         setScreen(<Splash navigate={navigate} />)
     }
@@ -61,6 +61,8 @@ export function App() {
   }, [])
 
   return <div className="SiesMain">
-    {screen}
+    <GameContext value={createEmptyState()}>
+      {screen}
+    </GameContext>
   </div>
 }

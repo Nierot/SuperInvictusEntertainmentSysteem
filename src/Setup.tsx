@@ -1,11 +1,10 @@
 import '@/style/components/setup.sass'
-import { useState, useCallback, useRef } from 'react'
-import { initState } from './game'
-import type { State } from './types'
+import { useState, useCallback, useRef, useContext } from 'react'
+import { State } from './game'
+import { GameContext } from './context'
 
 type SetupProps = {
   navigate: (to: string) => void
-  setGameState: (state: State) => void
 }
 
 type Dialog = {
@@ -14,7 +13,8 @@ type Dialog = {
   button: () => void
 }
 
-export function Setup({ navigate, setGameState }: SetupProps) {
+export function Setup({ navigate }: SetupProps) {
+  const state = useContext<State>(GameContext)
   const [players, setPlayers] = useState<Array<string>>([])
 
   const confirmDialog = useRef<HTMLDialogElement>(null)
@@ -40,9 +40,9 @@ export function Setup({ navigate, setGameState }: SetupProps) {
       )
     }
 
-    // TODO: init gamestate
-    const state = initState(players)
-    setGameState(state)
+    console.log('Starting game with state', state)
+
+    state.initializePlayersFromStringArray(players)
 
     navigate('game')
   }
@@ -74,11 +74,9 @@ export function Setup({ navigate, setGameState }: SetupProps) {
         <h3>Spelers</h3>
         <textarea onChange={handleChange} />
         <p>Voer de naam van elke speler komma-gescheiden in. Spelers kunnen tijdens het spel ten alle tijde worden toegevoegd/verwijderd.</p>
-        <table>
-          <tbody>
-            {players.map(p => <tr key={p}><td>{p}</td></tr>)}
-          </tbody>
-        </table>
+        <ul>
+          {players.map(p => <li key={p}>{p}</li>)}
+        </ul>
       </div>
       <div>
       </div>

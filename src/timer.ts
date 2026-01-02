@@ -1,10 +1,10 @@
 export class Timer {
 
   private clock: number
-  private currentTick = 3590
+  private currentTick = 0
   private lastPaused = new Date()
   private running = false
-  private handler: (tick: number, thr: string) => void = () => {}
+  private handler: (tick: number) => void = () => {}
 
   constructor() {
     this.clock = setInterval(this.tick.bind(this), 1000)
@@ -33,7 +33,7 @@ export class Timer {
     return ms
   }
 
-  public onTick(f: (time: number, thr: string) => void) {
+  public onTick(f: (time: number) => void) {
     this.handler = f
   }
 
@@ -47,10 +47,8 @@ export class Timer {
     }
 
     if (this.handler) {
-      this.handler(this.currentTick, this.getTimeHumanReadable())
+      this.handler(this.currentTick)
     }
-
-    console.log(this.currentTick)
 
     this.currentTick++
   }
