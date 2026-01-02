@@ -1,3 +1,5 @@
+import type { GameTimer } from './types'
+
 export class Timer {
 
   private clock: number
@@ -10,6 +12,10 @@ export class Timer {
     this.clock = setInterval(this.tick.bind(this), 1000)
     // @ts-expect-error is alleen maar voor debuggen
     window.timer = this
+  }
+
+  public setTick(tick: number) {
+    this.currentTick = tick
   }
 
   public getTime() {
@@ -37,7 +43,7 @@ export class Timer {
     this.handler = f
   }
 
-  public addTimer() {
+  public addTimer(t: GameTimer) {
 
   }
 

@@ -5,17 +5,20 @@ import { GameContext } from './context'
 
 export function SuperInvictusEntertainmentSysteem() {
   const state = useContext<State>(GameContext)
-  const [tick, setTick] = useState<number>(0)
+
+  // die variable is ongebruikt, aangezien dit is om een update te forceren
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, forceUpdate] = useState<number>(0)
 
   useEffect(() => {
-    state.onTick(setTick)
+    state.onTick(forceUpdate)
     state.startGame()
+    // Initialisatie effect, kop houde
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  useEffect(() => {
-  }, [tick])
-
   return <div className="SIES">
+
     <StateVisualizer />
   </div>
 }

@@ -1,16 +1,16 @@
-import { useEffect, useState, type ReactNode } from 'react'
 import '@/style/style.sass'
+import { useContext, useEffect, useState, type ReactNode } from 'react'
 import { SuperInvictusEntertainmentSysteem } from './SuperInvictusEntertainmentSysteem.tsx'
 import { Setup } from './Setup'
 import { Splash } from './Splash'
 import { GameContext } from './context'
-import { createEmptyState } from './game.ts'
+import { createEmptyState, State } from './game.ts'
 
 export function App() {
+  const gameState = useContext<State>(GameContext)
   const [screen, setScreen] = useState<ReactNode>()
 
   function navigate(to: string) {
-    localStorage.setItem('sies-page', to)
     window.location.hash = to
 
     switch (to) {
@@ -24,15 +24,19 @@ export function App() {
   }
 
   function parseOngoingGame(og: string) {
+    const success = gameState.restoreFromDump(og)
 
-    navigate('game')
+    if (success) {
+      navigate('game')
+    } else {
+      navigate('splash')
+    }
   }
 
 
   useEffect(() => {
     let hash = window.location.hash
-    const ongoingGame = localStorage.getItem('sies-game')
-
+    const ongoingGame = localStorage.getItem('sies-state')
 
     if (hash) {
       const spl = hash.split('#')
@@ -48,15 +52,10 @@ export function App() {
       }
     }
 
-    const curPage = localStorage.getItem('sies-page')
-
-    if (curPage) {
-      navigate(curPage)
-    }
-
-
     if (ongoingGame) {
       parseOngoingGame(ongoingGame)
+    } else {
+      navigate('splash')
     }
   }, [])
 

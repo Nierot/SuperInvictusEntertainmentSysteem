@@ -17,6 +17,7 @@ export class State {
   private timers: GameTimer[] = []
   private history: GameEvent[] = []
 
+  public currentTick = 0
   private onTickHandler: (tick: number) => void = () => {}
 
   constructor() {
@@ -27,7 +28,38 @@ export class State {
     window.state = this
   }
 
+  public dump() {
+    localStorage.setItem('sies-state', JSON.stringify(this))
+  }
+
+  public restoreFromDump(dump: string): boolean {
+    try {
+      const obj = JSON.parse(dump)
+      this.setCurrentGame(obj.currentGame)
+      this.gameData = obj.gameData
+      this.players = obj.players
+      // @ts-expect-error jaja
+      this.memory = new Map<GameID, GameMemory>(Object.entries(obj.memory))
+      // @ts-expect-error jaja
+      this.score = new Map<PlayerID, ScoreEvent[]>(Object.entries(obj.score))
+      this.timer.setTick(obj.currentTick)
+      console.error('TODO: Gametimers worden gereset')
+      obj.timers.map((t: GameTimer) => {
+        this.timers.push(t)
+        this.timer.addTimer(t)
+      })
+      this.history = obj.history
+    } catch (err: unknown) {
+      console.error(err)
+      return false
+    }
+
+    return true
+
+  }
+
   public initializePlayersFromStringArray(ps: string[]): void {
+    console.log('Initializing players')
     let idx = 1
     this.players = ps.map(p => {
       return {
@@ -43,7 +75,8 @@ export class State {
   }
 
   private _onTick(tick: number) {
-    localStorage.setItem('sies-state', JSON.stringify(this))
+    this.dump()
+    this.currentTick = tick
 
     if (this.onTickHandler) {
       this.onTickHandler(tick)
@@ -54,6 +87,10 @@ export class State {
     this.onTickHandler = handler
   }
 
+  public setTick(tick: number) {
+    this.timer.setTick(tick)
+  }
+
   public getTimeHumanReadable() {
     return this.timer.getTimeHumanReadable()
   }
@@ -62,7 +99,19 @@ export class State {
     return this.currentGame
   }
 
+  public setCurrentGame(currentGame: GameID) {
+    this.currentGame = currentGame
+  }
+
   public getPlayers() {
     return this.players
+  }
+
+  public setPlayers(ps: Player[]) {
+    this.players = ps
+  }
+
+  public getGameData() {
+    return this.gameData
   }
 }
