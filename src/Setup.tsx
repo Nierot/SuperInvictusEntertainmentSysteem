@@ -1,7 +1,6 @@
 import '@/style/components/setup.sass'
-import { useState, useCallback, useRef, useContext } from 'react'
-import { State } from './game'
-import { GameContext } from './context'
+import { useState, useCallback, useRef, type ChangeEvent } from 'react'
+import { useGame } from './hooks/useGame'
 
 type SetupProps = {
   navigate: (to: string) => void
@@ -14,7 +13,7 @@ type Dialog = {
 }
 
 export function Setup({ navigate }: SetupProps) {
-  const state = useContext<State>(GameContext)
+  const state = useGame()
   const [players, setPlayers] = useState<Array<string>>([])
 
   const confirmDialog = useRef<HTMLDialogElement>(null)
@@ -34,20 +33,20 @@ export function Setup({ navigate }: SetupProps) {
   const done = () => {
     if (players.length <= 1) {
       return openDialog(
-        `Je hebt maar ${players.length} spelers gedefineerd, dat klopt vast niet.`,
+        `Je hebt maar ${players.length} speler(s) gedefineerd, dat klopt vast niet.`,
         `Nee dat klopt niet nee`,
         closeDialog
       )
     }
-
-    console.log('Starting game with state', state)
-
+    sessionStorage.clear()
     state.initializePlayersFromStringArray(players)
+    state.dump()
+    console.log('Starting game with state', state)
 
     navigate('game')
   }
 
-  const handleChange = useCallback((event) => {
+  const handleChange = useCallback((event: ChangeEvent<HTMLTextAreaElement>) => {
     const spl: Array<string> = event.target.value.split(',')
 
     const ps: Array<string> = []

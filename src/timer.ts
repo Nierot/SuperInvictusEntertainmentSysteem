@@ -14,6 +14,12 @@ export class Timer {
     window.timer = this
   }
 
+  public reset() {
+    console.log('Resetting timer')
+    clearInterval(this.clock)
+
+  }
+
   public setTick(tick: number) {
     this.currentTick = tick
   }
@@ -30,10 +36,10 @@ export class Timer {
     const hms = new Date(this.currentTick * 1000).toLocaleString('nl-NL')
 
     const hours = Math.floor(this.currentTick / 3600)
+    // "1-1-1970, 01:01:07"
     const ms = hms.substring(13, 19)
 
     if (hours > 0) {
-      // "1-1-1970, 01:01:07"
       return `${hours}:${ms}`
     }
     return ms

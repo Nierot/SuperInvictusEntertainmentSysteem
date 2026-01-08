@@ -1,2 +1,63 @@
 .SIES
-  color: red
+  $topbar: 5rem
+  
+  display: grid
+  height: 100vh
+  grid-template-columns: $topbar 1fr $topbar
+  grid-template-rows: 1.5rem 1fr 1.5rem
+  padding: 1rem
+
+  // background-color: $color-background
+  // color: $color-text
+
+  .GameComponent
+    grid-area: 2 / 1 / 3 / 4
+
+    display: flex
+    justify-content: center
+    align-items: center
+
+  .Title
+    text-align: center
+    font-size: 1.5rem
+    font-style: italic
+
+  .DialogButton
+    display: flex
+    justify-content: flex-end
+    align-items: center
+
+    button
+      font-size: 1rem !important
+
+// GAME SPECIFIC CLASSES
+
+// if game.cssClass is not set, then this class is used, default purple and white
+.GameDefault
+  background-color: $color-background
+  color: $color-text
+
+.GameStartedWrapper
+  background-color: white
+
+  .SiesLogo
+    animation: sies-logo-bounce 1.5s ease-in-out infinite alternate
+
+.GameIdleWrapper
+  background-color: $color-primary
+  .Timer
+    color: white
+
+  h2
+    color: $color-primary !important
+
+  .SiesLogo
+    animation: sies-logo-bounce 1.5s ease-in-out infinite alternate
+
+.NLAlertWrapper
+  background-color: red
+  color: white
+
+.NotificationWrapper
+  background: $background-gradient
+  color: white

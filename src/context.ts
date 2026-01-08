@@ -1,4 +1,6 @@
 import { createContext } from 'react'
 import { State } from './game'
 
-export const GameContext = createContext<State>(new State())
+// @ts-expect-error is maar zo he
+export const GameContext = createContext<State>(null)
+

@@ -1,13 +1,13 @@
 import '@/style/style.sass'
-import { useContext, useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { SuperInvictusEntertainmentSysteem } from './SuperInvictusEntertainmentSysteem.tsx'
 import { Setup } from './Setup'
 import { Splash } from './Splash'
 import { GameContext } from './context'
-import { createEmptyState, State } from './game.ts'
+import { State } from './game.ts'
 
 export function App() {
-  const gameState = useContext<State>(GameContext)
+  const [game] = useState<State>(new State())
   const [screen, setScreen] = useState<ReactNode>()
 
   function navigate(to: string) {
@@ -24,7 +24,7 @@ export function App() {
   }
 
   function parseOngoingGame(og: string) {
-    const success = gameState.restoreFromDump(og)
+    const success = game.restoreFromDump(og)
 
     if (success) {
       navigate('game')
@@ -36,7 +36,7 @@ export function App() {
 
   useEffect(() => {
     let hash = window.location.hash
-    const ongoingGame = localStorage.getItem('sies-state')
+    const ongoingGame = sessionStorage.getItem('sies-state')
 
     if (hash) {
       const spl = hash.split('#')
@@ -46,7 +46,7 @@ export function App() {
       if (hash && hash !== 'game') {
         navigate(spl[1])
         return
-      } else if (ongoingGame) {
+      } else if (hash === 'game' && ongoingGame) {
         parseOngoingGame(ongoingGame)
         return
       }
@@ -60,8 +60,8 @@ export function App() {
   }, [])
 
   return <div className="SiesMain">
-    <GameContext value={createEmptyState()}>
+    <GameContext.Provider value={game}>
       {screen}
-    </GameContext>
+    </GameContext.Provider>
   </div>
 }

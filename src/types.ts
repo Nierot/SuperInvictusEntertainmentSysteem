@@ -1,11 +1,8 @@
-import type { Timer } from './timer'
+import type { State } from './game'
 
 export type GameID = number
 export type PlayerID = number
 export type AmountOfPlayers = 0 | 1 | 2 | 4 | 8
-
-export const RESERVED_GAME_IDS = [-1]
-export const GAME_ID_GAME_STARTED = -1
 
 export type Player = {
   pid: PlayerID
@@ -17,23 +14,25 @@ export type Game = {
   gid: GameID
   weight: number
   roundTime: number
-  cooldown: TimerType
+  defaultRoundTime: number
+  cooldown: number
+  defaultCooldown: number
   name: string
+  effect?: (state: State) => void
   numPlayers: AmountOfPlayers
-  participants: PlayerID[]
+  cssClass?: string
 }
 
 export type GameMemory = {
   game: GameID
-  timer: GameTimer | null;
+  time: number;
   trigger: () => void
 }
 
-export type TimerType = 'time' | 'rounds'
-
-export type GameTimer = {
-  timer: Timer
-  type: TimerType
+export type Notification = {
+  time: number
+  title: string
+  text: string
 }
 
 export type GameEvent = {
