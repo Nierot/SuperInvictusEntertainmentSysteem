@@ -1,6 +1,7 @@
 import '@/style/components/dialog.sass'
 import { useRef, useEffect } from 'react'
 import { useGame } from './hooks/useGame'
+import { GAMES } from './games'
 
 type DebugDialogProps = {
   show: boolean
@@ -43,6 +44,10 @@ export function DebugDialog({ show, onClose }: DebugDialogProps) {
           <tr>
             <td>Players</td>
             <td>{state.getPlayers()?.map(p => <p>{p.pid} {p.name} {p.score}</p>)}</td>
+          </tr>
+          <tr>
+            <td>Games</td>
+            <td>{Object.values(GAMES).map(g => <p>{g.name} {g.cooldown} ({g.defaultCooldown})</p>)}</td>
           </tr>
         </tbody>
       </table>

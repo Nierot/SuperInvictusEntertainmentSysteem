@@ -96,8 +96,7 @@ export class State {
   }
 
   public forceNewGame() {
-    // this.selectNextGame()
-    this.startMiniGame(GAME_IDS.DRINKING_BUDDIES)
+    this.selectNextGame()
   }
 
   public addNotification(time: number, title: string, text: string) {
