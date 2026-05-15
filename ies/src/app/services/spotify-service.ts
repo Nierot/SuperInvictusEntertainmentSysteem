@@ -13,6 +13,9 @@ interface Song {
 
 export const INVICTUS_PLAYLIST_ID = '3ATkm5SqvN1wNdm3Rcct8B';
 
+/**
+ * Manages interactions with the Spotify API (excluding authorization; see the SpotifyAuthService)
+ */
 @Injectable({
   providedIn: 'root',
 })
@@ -26,7 +29,7 @@ export class SpotifyService {
         method: 'PUT',
         headers: {
           Authorization:
-            `Bearer ${this.spotifyAuthService.getAccessToken()()}`,
+            `Bearer ${this.spotifyAuthService.accessToken()}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -42,6 +45,4 @@ export class SpotifyService {
       );
     }
   }
-
-
 }

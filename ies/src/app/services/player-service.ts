@@ -7,6 +7,12 @@ interface Player {
   last_bakkeltje: Date
 }
 
+/**
+ * Manage everything and anything related to Players
+ *
+ * You can track who hasn't gone in a while, who's too drunk to function,
+ * or don't.
+ */
 @Injectable({
   providedIn: 'root',
 })

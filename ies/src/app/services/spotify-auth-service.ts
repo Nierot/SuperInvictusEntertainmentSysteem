@@ -16,6 +16,9 @@ type TokenResponse = {
   expires_in: number;
 };
 
+/**
+ * Manages authentication towards the Spotify API
+ */
 @Injectable({
   providedIn: 'root',
 })
@@ -24,9 +27,9 @@ export class SpotifyAuthService {
   private redirectUri = environment.url + environment.spotify.redirectUri;
   private authChannel = new BroadcastChannel(SPOTIFY_AUTH_CHANNEL_KEY);
 
-  // --- auth state (reactive friendly) ---
-  accessToken = signal<string>('');
-  refreshToken = signal<string>('');
+  private _accessToken = signal<string>('');
+  public accessToken = this._accessToken.asReadonly();
+  private _refreshToken = signal<string>('');
 
   constructor() {
     this.loadStoredTokens();
@@ -38,11 +41,11 @@ export class SpotifyAuthService {
     const refreshToken = localStorage.getItem(REFRESH_TOKEN_STORAGE_KEY);
 
     if (accessToken) {
-      this.accessToken.set(accessToken);
+      this._accessToken.set(accessToken);
     }
 
     if (refreshToken) {
-      this.refreshToken.set(refreshToken);
+      this._refreshToken.set(refreshToken);
     }
   }
 
@@ -124,8 +127,8 @@ export class SpotifyAuthService {
     localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
     localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
 
-    this.accessToken.set('');
-    this.refreshToken.set('');
+    this._accessToken.set('');
+    this._refreshToken.set('');
   }
 
   // ----------------------------
@@ -184,8 +187,8 @@ export class SpotifyAuthService {
     const access_token = data.access_token;
     const refresh_token = data.refresh_token ?? '';
 
-    this.accessToken.set(access_token);
-    this.refreshToken.set(refresh_token);
+    this._accessToken.set(access_token);
+    this._refreshToken.set(refresh_token);
 
     this.storeTokens(
       access_token,
@@ -202,7 +205,7 @@ export class SpotifyAuthService {
   // ----------------------------
 
   async refreshAccessToken(): Promise<void> {
-    if (!this.refreshToken()) {
+    if (!this._refreshToken()) {
       throw new Error('No refresh token available');
     }
 
@@ -216,7 +219,7 @@ export class SpotifyAuthService {
         },
         body: new URLSearchParams({
           grant_type: 'refresh_token',
-          refresh_token: this.refreshToken(),
+          refresh_token: this._refreshToken(),
           client_id: this.clientId,
         }),
       }
@@ -227,8 +230,8 @@ export class SpotifyAuthService {
     const access_token = data.access_token;
     const refresh_token = data.refresh_token ?? '';
 
-    this.accessToken.set(access_token);
-    this.refreshToken.set(refresh_token);
+    this._accessToken.set(access_token);
+    this._refreshToken.set(refresh_token);
 
     this.storeTokens(access_token, refresh_token);
   }
@@ -238,10 +241,6 @@ export class SpotifyAuthService {
   // ----------------------------
 
   isAuthorized(): boolean {
-    return this.accessToken() !== '';
-  }
-
-  getAccessToken() : Signal<string> {
-    return this.accessToken.asReadonly();
+    return this._accessToken() !== '';
   }
 }
