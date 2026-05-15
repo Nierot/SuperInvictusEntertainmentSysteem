@@ -1,0 +1,98 @@
+/* =========================
+   Design tokens
+========================= */
+
+@color-bg: #f4f1fb;
+@color-surface: #fff;
+@color-text: #1f1f1f;
+
+@primary: #6f00ff;
+@primary-hover: #5d19b5;
+
+@danger: #ff4b6a;
+
+@radius: 12px;
+
+/* =========================
+   Base
+========================= */
+
+:root {
+  font-family: 'Ubuntu', sans-serif;
+
+  background: @color-bg;
+  color: @color-text;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+/* =========================
+   Typography
+========================= */
+
+h1 { font-size: 3rem; }
+h2 { font-size: 2rem; }
+h3 { font-size: 1.5rem; }
+
+p {
+  line-height: 1.4;
+  color: #666;
+}
+
+/* =========================
+   Buttons (global)
+========================= */
+
+button {
+  background: @primary;
+  color: white;
+
+  border: none;
+  border-radius: @radius;
+
+  padding: 0.8rem 1rem;
+
+  cursor: pointer;
+
+  font-size: 1rem;
+
+  transition: 0.15s ease;
+}
+
+button:hover {
+  background: @primary-hover;
+}
+
+button.danger {
+  background: @danger;
+}
+
+/* =========================
+   Inputs (global)
+========================= */
+
+input {
+  width: 100%;
+  padding: 0.8rem;
+
+  border: 1px solid #ddd;
+  border-radius: @radius;
+
+  font-size: 1rem;
+}
+
+/* =========================
+   Layout helpers
+========================= */
+
+.card {
+  background: @color-surface;
+
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+
+  border-radius: @radius;
+}

@@ -1,0 +1,107 @@
+<div class="SetupScreen">
+
+  <dialog [open]="dialogVisible()" (click)="closeDialog()">
+
+    <h4>
+      @if (playerNames().length > 1) {
+        Start het spel?
+      } @else {
+        Jij feut
+      }
+    </h4>
+
+    <p>
+      @if (playerNames().length > 1) {
+        Iedereen klaar om te beginnen?
+      } @else if (playerNames().length === 1) {
+        Je gaat toch niet alleen spelen?
+      } @else {
+        Je kan niet spelen zonder spelers
+      }
+    </p>
+
+    <button (click)="playerNames().length > 1 ? doConfirm() : closeDialog()">
+      @if (playerNames().length > 1) {
+        Start spel
+      } @else {
+        Ok
+      }
+    </button>
+
+  </dialog>
+
+  <header class="PageHeader">
+    <h2>Spel instellingen</h2>
+    <p>Configureer spelers en Spotify.</p>
+  </header>
+
+  <section class="Card Players">
+
+    <h3>Spelers ({{ playerNames().length }})</h3>
+
+    <input
+      type="text"
+      #ta
+      placeholder="Voeg speler toe"
+      (keydown.enter)="enterPlayer(ta.value, ta)"
+    />
+
+    <p class="Hint">
+      Druk op enter om toe te voegen
+    </p>
+
+    @if (playerNames().length) {
+
+      <ul>
+        @for (player of playerNames(); track $index) {
+          <li>
+            {{ $index + 1 }}. {{ player }}
+            <button (click)="removePlayer($index)">✕</button>
+          </li>
+        }
+      </ul>
+
+    } @else {
+
+      <p class="EmptyState">
+        Nog geen spelers
+      </p>
+
+    }
+
+  </section>
+
+  <section class="Card Spotify">
+
+    <h3>Spotify</h3>
+
+    @if (spotifyAuthService.isAuthorized()) {
+
+      <button (click)="spotifyService.playPlaylist('3ATkm5SqvN1wNdm3Rcct8B')">
+        Test playlist
+      </button>
+
+      <button (click)="spotifyAuthService.logout()">
+        Logout
+      </button>
+
+    } @else {
+
+      <button (click)="authSpotify()">
+        Verbind Spotify
+      </button>
+
+    }
+
+  </section>
+
+  <footer>
+    <button class="StartButton" (click)="openDialog()">
+      Start spel
+    </button>
+    <button class="BackButton" (click)="doBack()">
+      Terug
+    </button>
+  </footer>
+
+</div>

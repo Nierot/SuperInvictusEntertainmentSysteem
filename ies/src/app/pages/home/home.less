@@ -1,0 +1,41 @@
+.SplashScreen {
+  height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 2rem;
+
+  text-align: center;
+
+  background: radial-gradient(
+    circle at top,
+    #f0e7ff,
+    #f8f5ff 40%,
+    #ece7ff
+  );
+}
+
+.SplashScreen button {
+  padding: 1rem 2rem;
+
+  font-size: 1.2rem;
+
+  border-radius: 999px;
+
+  background: #6f00ff;
+  color: white;
+
+  border: none;
+
+  cursor: pointer;
+
+  transition: 0.15s ease;
+}
+
+.SplashScreen button:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
