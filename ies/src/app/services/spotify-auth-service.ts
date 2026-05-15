@@ -18,6 +18,8 @@ type TokenResponse = {
 
 /**
  * Manages authentication towards the Spotify API
+ *
+ * TODO: SpotifyAuthService betrekken bij de Spotify service zodat hij alles onder water kan blijven doen
  */
 @Injectable({
   providedIn: 'root',
