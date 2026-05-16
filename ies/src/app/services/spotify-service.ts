@@ -1,17 +1,13 @@
 import {inject, Injectable} from '@angular/core';
 import {SpotifyAuthService} from './spotify-auth-service';
 
-interface Token {
-  access_token: string,
-  token_type: string,
-  expires_in: number
-}
-
-interface Song {
-
+export interface Track {
+  id: string,
+  name: string
 }
 
 export const INVICTUS_PLAYLIST_ID = '3ATkm5SqvN1wNdm3Rcct8B';
+export const VERJAARDAGEN_PLAYLIST_ID = '2F0cdo3x9N91YG4TM1bOzT';
 
 /**
  * Manages interactions with the Spotify API (excluding authorization; see the SpotifyAuthService)
@@ -20,11 +16,14 @@ export const INVICTUS_PLAYLIST_ID = '3ATkm5SqvN1wNdm3Rcct8B';
   providedIn: 'root',
 })
 export class SpotifyService {
+  private SPOTIFY_API_URL = 'https://api.spotify.com/v1';
   private spotifyAuthService = inject(SpotifyAuthService);
 
-  private async fetch(url: string, method: string, body?: BodyInit): Promise<Response> {
+  public isAuthenticated = this.spotifyAuthService.isAuthenticated;
 
-    if (!this.spotifyAuthService.isAuthorized()) {
+  private async fetch(url: string, method: string = 'GET', body?: BodyInit): Promise<Response> {
+
+    if (!this.spotifyAuthService.isAuthenticated()) {
       throw new Error('You must be authorized before using the Spotify API');
     }
 
@@ -37,7 +36,7 @@ export class SpotifyService {
         headers['Content-Type'] = 'application/json';
       }
 
-      return fetch(url, {
+      return fetch(this.SPOTIFY_API_URL + url, {
         method,
         headers,
         body,
@@ -46,7 +45,12 @@ export class SpotifyService {
 
     let response = await makeRequest();
 
-    if (response.status === 401) {
+    if (response.status === 429) {
+      const retryAfter = Number(response.headers.get("Retry-After") || 1);
+      console.log(`Rate limited. Waiting ${retryAfter}s`);
+      await new Promise(r => setTimeout(r, retryAfter * 1000));
+      response = await makeRequest();
+    } else if (response.status === 401) {
       await this.spotifyAuthService.refreshAccessToken();
       response = await makeRequest();
     } else if(!response.ok) {
@@ -58,17 +62,42 @@ export class SpotifyService {
   }
 
   public async playPlaylist(playlistId: string): Promise<void> {
-    const response = await this.fetch(
-      'https://api.spotify.com/v1/me/player/play',
+    await this.fetch(
+      '/me/player/play',
       'PUT',
       JSON.stringify({context_uri: `spotify:playlist:${playlistId}`,})
     );
+  }
 
-    if (!response.ok) {
-      console.log(JSON.stringify(response))
-      throw new Error(
-        `Spotify playback failed: ${response.status}`
-      );
+  public async getPlaybackState() {
+    const response = await this.fetch('/me/player');
+    return await response.json();
+  }
+
+  public async getCurrentTrack() {
+    const response = await this.fetch('/me/player/currently-playing');
+    return await response.json();
+  }
+
+  public async getAllAlbumTracks(albumId:string):Promise<Track[]> {
+    const tracks: { name:string, id:string }[] = [];
+    let offset:number = 0;
+    const limit:number = 50;
+
+    while (true) {
+      const response =  await this.fetch(`/albums/${albumId}/tracks?limit=${limit}&offset=${offset}`)
+
+      const data = await response.json();
+
+      tracks.push(...data.items.map(t => {return {name: t.name, id: t.id}}));
+
+      if (!data.next) break;
+
+      offset += limit;
+
+      await new Promise(r => setTimeout(r, 200));
     }
+
+    return tracks;
   }
 }

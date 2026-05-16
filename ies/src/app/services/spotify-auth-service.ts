@@ -1,4 +1,4 @@
-import {Injectable, Signal, signal} from '@angular/core';
+import {computed, Injectable, Signal, signal} from '@angular/core';
 import {environment} from '../../environment/environment';
 
 const ACCESS_TOKEN_STORAGE_KEY = 'spotify_access_token'
@@ -32,6 +32,8 @@ export class SpotifyAuthService {
   private _accessToken = signal<string>('');
   public accessToken = this._accessToken.asReadonly();
   private _refreshToken = signal<string>('');
+
+  public isAuthenticated = computed(() => this._accessToken() !== '');
 
   constructor() {
     this.loadStoredTokens();
@@ -236,13 +238,5 @@ export class SpotifyAuthService {
     this._refreshToken.set(refresh_token);
 
     this.storeTokens(access_token, refresh_token);
-  }
-
-  // ----------------------------
-  // Helpers
-  // ----------------------------
-
-  isAuthorized(): boolean {
-    return this._accessToken() !== '';
   }
 }

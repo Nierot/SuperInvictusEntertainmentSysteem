@@ -1,26 +1,26 @@
-import {computed, Injectable, Signal, signal} from '@angular/core';
+import {
+  computed,
+  Injectable,
+  Signal,
+  signal,
+} from '@angular/core';
 
 interface Player {
-  name: string,
-  last_called: Date,
-  blood_alcohol_content: number,
-  last_bakkeltje: Date
+  name: string;
+  last_called: Date;
+  blood_alcohol_content: number;
+  last_bakkeltje: Date;
 }
 
-/**
- * Manage everything and anything related to Players
- *
- * You can track who hasn't gone in a while, who's too drunk to function,
- * or don't.
- */
 @Injectable({
   providedIn: 'root',
 })
 export class PlayerService {
+
   private readonly _playerList = signal<Player[]>([]);
 
-  readonly playerNames:Signal<string[]> = computed(() => {
-    return this._playerList().map((player) => player.name)
+  readonly playerNames: Signal<string[]> = computed(() => {
+    return this._playerList().map((player) => player.name);
   });
 
   addPlayer(name: string) {
@@ -30,7 +30,7 @@ export class PlayerService {
       return;
     }
 
-    this._playerList.update(players => [
+    this._playerList.update((players) => [
       ...players,
       {
         name: trimmed,
@@ -42,7 +42,7 @@ export class PlayerService {
   }
 
   removePlayer(index: number) {
-    this._playerList.update(players =>
+    this._playerList.update((players) =>
       players.filter((_, i) => i !== index)
     );
   }

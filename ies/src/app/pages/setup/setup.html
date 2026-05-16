@@ -75,7 +75,7 @@
 
     <h3>Spotify</h3>
 
-    @if (spotifyAuthService.isAuthorized()) {
+    @if (spotifyAuthService.isAuthenticated()) {
 
       <button (click)="spotifyService.playPlaylist('3ATkm5SqvN1wNdm3Rcct8B')">
         Test playlist
