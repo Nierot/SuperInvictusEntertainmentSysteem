@@ -7,9 +7,9 @@ import {
 
 interface Player {
   name: string;
-  last_called: Date;
+  last_called: number;
   blood_alcohol_content: number;
-  last_bakkeltje: Date;
+  last_bakkeltje: number;
 }
 
 @Injectable({
@@ -34,9 +34,9 @@ export class PlayerService {
       ...players,
       {
         name: trimmed,
-        last_called: new Date(),
+        last_called: 0,
         blood_alcohol_content: 0,
-        last_bakkeltje: new Date()
+        last_bakkeltje: 0
       },
     ]);
   }
@@ -49,5 +49,118 @@ export class PlayerService {
 
   clearPlayers() {
     this._playerList.set([]);
+  }
+
+  private weightedPick<T>(
+    items: T[],
+    weightFn: (item: T) => number
+  ): T {
+    if (items.length === 0) {
+      throw Error('Waarom gebruik je ook een lege lijst hierop??')
+    }
+
+    const weighted = items.map(item => ({
+      item,
+      weight: Math.max(0, weightFn(item))
+    }));
+
+    const totalWeight = weighted.reduce(
+      (sum, entry) => sum + entry.weight,
+      0
+    );
+
+    if (totalWeight <= 0) {
+      return items[
+        Math.floor(Math.random() * items.length)
+        ];
+    }
+
+    let random = Math.random() * totalWeight;
+
+    for (const entry of weighted) {
+      random -= entry.weight;
+
+      if (random <= 0) {
+        return entry.item;
+      }
+    }
+
+    return weighted[0].item;
+  }
+
+  pickPlayers(
+    count: number,
+    options?: {
+      exclude?: string[];
+      preferDrunk?: boolean;
+      preferSober?: boolean;
+    }
+  ): Player[] {
+
+    const exclude = options?.exclude ?? [];
+
+    let availablePlayers =
+      this._playerList().filter(
+        player =>
+          !exclude.includes(player.name)
+      );
+
+    const selected: Player[] = [];
+
+    count = Math.min(count, availablePlayers.length);
+
+    for (let i = 0; i < count; i++) {
+      const picked =
+        this.weightedPick(
+          availablePlayers,
+          player => {
+            let weight = player.last_called;
+
+            if (options?.preferDrunk) weight *= (player.blood_alcohol_content + 1);
+
+            if (options?.preferSober) weight *= ( 1 / (player.blood_alcohol_content + 0.1));
+
+            return weight;
+          }
+        );
+
+      if (!picked) break;
+
+      selected.push(picked);
+
+      availablePlayers = availablePlayers.filter(p => p.name !== picked.name);
+    }
+
+    return selected;
+  }
+
+  markPlayerCalled(player: Player) {
+    this._playerList.update(players =>
+      players.map(p =>
+        p.name === player.name
+          ? {
+            ...p,
+            last_called: 0
+          }
+          : p
+      )
+    );
+  }
+
+  increaseBAC(
+    playerName: string,
+    amount: number
+  ) {
+    this._playerList.update(players =>
+      players.map(player =>
+        player.name === playerName
+          ? {
+            ...player,
+            blood_alcohol_content:
+              player.blood_alcohol_content + amount
+          }
+          : player
+      )
+    );
   }
 }

@@ -89,7 +89,7 @@ export class SpotifyService {
 
       const data = await response.json();
 
-      tracks.push(...data.items.map(t => {return {name: t.name, id: t.id}}));
+      tracks.push(...data.items.map((t:any) => {return {name: t.name, id: t.id}}));
 
       if (!data.next) break;
 
