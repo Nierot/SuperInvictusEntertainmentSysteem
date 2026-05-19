@@ -1,11 +1,6 @@
-import {
-  computed,
-  Injectable,
-  Signal,
-  signal,
-} from '@angular/core';
+import {computed, effect, Injectable, signal, Signal,} from '@angular/core';
 
-interface Player {
+export interface Player {
   name: string;
   last_called: number;
   blood_alcohol_content: number;
@@ -17,18 +12,59 @@ interface Player {
 })
 export class PlayerService {
 
+  private readonly PLAYER_SAVE_KEY = 'ies_players';
+
   private readonly _playerList = signal<Player[]>([]);
 
   readonly playerNames: Signal<string[]> = computed(() => {
     return this._playerList().map((player) => player.name);
   });
 
+  constructor() {
+    this.loadPlayers();
+
+    effect(() => {
+      this.savePlayers();
+    });
+  }
+
+  /**
+   * Save players to localStorage
+   */
+  private savePlayers() {
+    localStorage.setItem(
+      this.PLAYER_SAVE_KEY,
+      JSON.stringify(this._playerList())
+    );
+  }
+
+  /**
+   * Load players from localStorage
+   */
+  private loadPlayers() {
+    const stored =
+      localStorage.getItem(this.PLAYER_SAVE_KEY);
+
+    if (!stored) { return; }
+
+    try {
+      const players: Player[] = JSON.parse(stored);
+
+      this._playerList.set(players);
+    } catch (error) {
+      console.error(
+        'Failed to load players from localStorage',
+        error
+      );
+
+      this._playerList.set([]);
+    }
+  }
+
   addPlayer(name: string) {
     const trimmed = name.trim();
 
-    if (!trimmed) {
-      return;
-    }
+    if (!trimmed) { return; }
 
     this._playerList.update((players) => [
       ...players,
@@ -56,7 +92,9 @@ export class PlayerService {
     weightFn: (item: T) => number
   ): T {
     if (items.length === 0) {
-      throw Error('Waarom gebruik je ook een lege lijst hierop??')
+      throw Error(
+        'Waarom gebruik je ook een lege lijst hierop??'
+      );
     }
 
     const weighted = items.map(item => ({
@@ -116,35 +154,46 @@ export class PlayerService {
           player => {
             let weight = player.last_called;
 
-            if (options?.preferDrunk) weight *= (player.blood_alcohol_content + 1);
+            if (options?.preferDrunk) {
+              weight *= (
+                player.blood_alcohol_content + 1
+              );
+            }
 
-            if (options?.preferSober) weight *= ( 1 / (player.blood_alcohol_content + 0.1));
+            if (options?.preferSober) {
+              weight *= (
+                1 /
+                (player.blood_alcohol_content + 0.1)
+              );
+            }
 
             return weight;
           }
         );
 
-      if (!picked) break;
-
       selected.push(picked);
 
-      availablePlayers = availablePlayers.filter(p => p.name !== picked.name);
+      availablePlayers =
+        availablePlayers.filter(
+          p => p.name !== picked.name
+        );
     }
 
-    return selected;
-  }
-
-  markPlayerCalled(player: Player) {
     this._playerList.update(players =>
-      players.map(p =>
-        p.name === player.name
+      players.map(player =>
+        selected.includes(player)
           ? {
-            ...p,
-            last_called: 0
+        ...player,
+          last_called: 0
           }
-          : p
+          : {
+            ...player,
+            last_called: player.last_called + 1
+          }
       )
     );
+
+    return selected;
   }
 
   increaseBAC(

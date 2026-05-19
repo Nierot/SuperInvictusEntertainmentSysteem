@@ -1,1 +1,24 @@
-<p>game works!</p>
+<div class="game">
+  <div class="game-container">
+    <div class="card fixed-size">
+      <ng-container
+        [ngComponentOutlet]="currentGame().component"
+        [ngComponentOutletInputs]="{context: currentContext()}"
+      >
+      </ng-container>
+    </div>
+  </div>
+  @if(alerts()) {
+    <div class="status-container">
+      <div class="ticker">
+        <div class="ticker-item ticker-item-1">
+          {{alerts()}}
+        </div>
+
+        <div class="ticker-item ticker-item-2">
+          {{alerts()}}
+        </div>
+      </div>
+    </div>
+  }
+</div>

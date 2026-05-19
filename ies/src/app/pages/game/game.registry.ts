@@ -1,7 +1,9 @@
 import {Type} from '@angular/core';
-import {HetIsJeVerjaardagGame} from './games/het-is-je-verjaardag-game/het-is-je-verjaardag-game';
-import {BeginGame} from './games/begin-game/begin-game';
-import {Beermile} from './games/beermile/beermile';
+import {HetIsJeVerjaardagGame} from './games/het-is-je-verjaardag-game';
+import {BeginGame} from './games/begin-game';
+import {Beermile} from './games/beermile';
+import {FrituurGame} from './games/frituur-game';
+import {SjoerdGame} from './games/sjoerd';
 
 export interface GameEntry {
   id:string,
@@ -32,5 +34,14 @@ export const GAMES: GameEntry[] = [
     id: 'beermile',
     rarity: RARITIES.UNCOMMON,
     component: Beermile
+  },
+  {
+    id: 'frituur',
+    rarity: RARITIES.RARE,
+    component: FrituurGame
+  }, {
+    id: 'sjoerd',
+    rarity: RARITIES.UNCOMMON,
+    component: SjoerdGame
   }
 ]

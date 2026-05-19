@@ -1,0 +1,97 @@
+@import '../../../styles';
+
+.game {
+  display: flex;
+  flex-direction: column;
+
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: @color-bg;
+}
+
+.game-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  flex: 5;
+}
+
+.fixed-size {
+  width: 60%;
+  height: 60%;
+
+  background: @color-surface;
+  border-radius: 16px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.status-container {
+  flex: 1;
+  background: @danger;
+
+  position: relative;
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+}
+
+.ticker {
+  position: relative;
+
+  width: 100%;
+  height: 2rem;
+
+  overflow: hidden;
+}
+
+.ticker-item {
+  position: absolute;
+  top: 0;
+
+  width: 100%;
+
+  white-space: nowrap;
+
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+/* First copy */
+.ticker-item-1 {
+  animation: ticker-1 20s linear infinite;
+}
+
+/* Second copy */
+.ticker-item-2 {
+  animation: ticker-2 20s linear infinite;
+}
+
+@keyframes ticker-1 {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes ticker-2 {
+  from {
+    transform: translateX(200%);
+  }
+
+  to {
+    transform: translateX(0%);
+  }
+}
